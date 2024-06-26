@@ -1,0 +1,12 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /bookstore
+
+spring:
+  application:
+    name: demo
+  datasource:
+    url: jdbc:postgresql://localhost:5432/spring_bookstore
+    username: postgres
+    password: 123123
