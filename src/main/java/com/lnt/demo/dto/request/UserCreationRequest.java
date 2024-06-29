@@ -1,10 +1,15 @@
 package com.lnt.demo.dto.request;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 
 public class UserCreationRequest implements Serializable {
+    @NotEmpty(message = "USERNAME_REQUIRED")
     private String username;
+    @Size(min = 8, message = "INVALID_PASSWORD")
     private String password;
     private String firstName;
     private String lastName;

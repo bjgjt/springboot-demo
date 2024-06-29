@@ -3,6 +3,8 @@ package com.lnt.demo.service.impl;
 import com.lnt.demo.dto.request.UserCreationRequest;
 import com.lnt.demo.dto.request.UserUpdateRequest;
 import com.lnt.demo.entity.User;
+import com.lnt.demo.exception.AppException;
+import com.lnt.demo.exception.ExceptionCode;
 import com.lnt.demo.repository.UserRepository;
 import com.lnt.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,10 @@ public class UserServiceImpl implements UserService {
     public User createUser(UserCreationRequest request) {
         User user = new User();
 
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new AppException(ExceptionCode.USER_EXISTED);
+        }
+
         user.setUsername(request.getUsername());
         user.setPassword(request.getPassword());
         user.setFirstName(request.getFirstName());
@@ -36,7 +42,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(String userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findById(userId).orElseThrow(() -> new AppException(ExceptionCode.USER_NOT_FOUND));
     }
 
     @Override
