@@ -1,4 +1,4 @@
-package com.lnt.demo.dto.request;
+package com.lnt.demo.dto.reponse;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -7,11 +7,13 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserUpdateRequest implements Serializable {
+public class UserResponse implements Serializable {
+    String id;
+    String username;
     String password;
     String firstName;
     String lastName;

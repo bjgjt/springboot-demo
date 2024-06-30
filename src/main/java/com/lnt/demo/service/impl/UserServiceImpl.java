@@ -1,10 +1,12 @@
 package com.lnt.demo.service.impl;
 
+import com.lnt.demo.dto.reponse.UserResponse;
 import com.lnt.demo.dto.request.UserCreationRequest;
 import com.lnt.demo.dto.request.UserUpdateRequest;
 import com.lnt.demo.entity.User;
 import com.lnt.demo.exception.AppException;
 import com.lnt.demo.exception.ExceptionCode;
+import com.lnt.demo.mapper.UserMapper;
 import com.lnt.demo.repository.UserRepository;
 import com.lnt.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,43 +18,37 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
-    public User createUser(UserCreationRequest request) {
-        User user = new User();
-
+    public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ExceptionCode.USER_EXISTED);
         }
 
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
-
-        return userRepository.save(user);
+        User user = userMapper.toUserEntity(request);
+        User savedUser = userRepository.save(user);
+        return userMapper.toUserResponse(savedUser);
     }
 
     @Override
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getUsers() {
+        List<User> listUsers = userRepository.findAll();
+        return userMapper.toListUserResponses(listUsers);
     }
 
     @Override
-    public User getUser(String userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new AppException(ExceptionCode.USER_NOT_FOUND));
+    public UserResponse getUser(String userId) {
+        return userMapper.toUserResponse(userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ExceptionCode.USER_NOT_FOUND)));
     }
 
     @Override
     public User updateUser(String userId, UserUpdateRequest request) {
-        User user = getUser(userId);
-
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ExceptionCode.USER_NOT_FOUND));
+        userMapper.updateUser(user, request);
         return userRepository.save(user);
     }
 

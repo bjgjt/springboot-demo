@@ -1,6 +1,7 @@
 package com.lnt.demo.controller;
 
 import com.lnt.demo.dto.ApiResponse;
+import com.lnt.demo.dto.reponse.UserResponse;
 import com.lnt.demo.dto.request.UserCreationRequest;
 import com.lnt.demo.dto.request.UserUpdateRequest;
 import com.lnt.demo.entity.User;
@@ -18,21 +19,26 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request) {
-        ApiResponse<User> response = new ApiResponse<>();
+    public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
+        ApiResponse<UserResponse> response = new ApiResponse<>();
         response.setResult(userService.createUser(request));
         response.setCode(0);
         return response;
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userService.getUsers();
+    public ApiResponse<List<UserResponse>> getUsers() {
+        ApiResponse<List<UserResponse>> response = new ApiResponse<>();
+        response.setResult(userService.getUsers());
+        response.setCode(0);
+        return response;
     }
 
     @GetMapping(path = "/{userId}")
-    public User getUser(@PathVariable(name = "userId", required = true) String userId) {
-        return userService.getUser(userId);
+    public ApiResponse<UserResponse> getUser(@PathVariable(name = "userId", required = true) String userId) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getUser(userId))
+                .build();
     }
 
     @PutMapping(path = "/{userId}")
