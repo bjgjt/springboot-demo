@@ -9,17 +9,20 @@ import com.lnt.demo.exception.ExceptionCode;
 import com.lnt.demo.mapper.UserMapper;
 import com.lnt.demo.repository.UserRepository;
 import com.lnt.demo.service.UserService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserMapper userMapper;
+    UserRepository userRepository;
+    UserMapper userMapper;
 
     @Override
     public UserResponse createUser(UserCreationRequest request) {
