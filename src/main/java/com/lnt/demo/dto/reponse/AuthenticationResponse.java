@@ -11,5 +11,5 @@ import java.io.Serializable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class AuthenticationResponse implements Serializable {
-    boolean authenticated;
+    String token;
 }
