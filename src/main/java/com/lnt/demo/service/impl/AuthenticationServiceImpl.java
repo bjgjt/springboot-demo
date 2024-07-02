@@ -1,7 +1,9 @@
 package com.lnt.demo.service.impl;
 
 import com.lnt.demo.dto.reponse.AuthenticationResponse;
+import com.lnt.demo.dto.reponse.IntrospectResponse;
 import com.lnt.demo.dto.request.AuthenticationRequest;
+import com.lnt.demo.dto.request.IntrospectRequest;
 import com.lnt.demo.entity.User;
 import com.lnt.demo.exception.AppException;
 import com.lnt.demo.exception.ExceptionCode;
@@ -9,7 +11,9 @@ import com.lnt.demo.repository.UserRepository;
 import com.lnt.demo.service.AuthenticationService;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -45,6 +50,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         return AuthenticationResponse.builder()
                 .token(token)
+                .build();
+    }
+
+    @Override
+    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
+        String token = request.getToken();
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        boolean verified = signedJWT.verify(verifier);
+        return IntrospectResponse.builder()
+                .valid(verified && expiryTime.after(new Date()))
                 .build();
     }
 
